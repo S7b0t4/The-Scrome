@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+header{
+  position: absolute;
+  top: 0;
+}
+.center{
+  margin: 0 auto;
+}
+main{
+  margin: 0 auto;
+}
+footer{
+  margin: 0 auto;
+}
