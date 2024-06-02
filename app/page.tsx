@@ -1,7 +1,14 @@
-export default function Home() {
+import WithAuth from "./WithAuth";
+import { FunctionComponent } from 'react';
+
+const ProtectedPage: FunctionComponent = () => {
+
   return (
     <div>
-      hello, world
+      <WithAuth />
+      <h1>Page with protect</h1>
     </div>
   );
-}
+};
+
+export default ProtectedPage;

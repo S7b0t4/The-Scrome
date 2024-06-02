@@ -1,6 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+body{
+  background: gray;
+  color: black;
+}
 header{
   position: absolute;
   top: 0;
