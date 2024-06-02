@@ -116,7 +116,39 @@ app.post('/login', async function(req, res) {
   }
 });
 
+app.post('/api/sendMessage', async (req, res) => {
+  console.log(req.body)
+  const { message, selectedChat } = req.body;
 
+
+  const botToken = "7358477783:AAFqhM5DZUWF18keUNoFC0EV6I5PZrlxD50";
+  const chatId = selectedChat.id;
+  console.log(chatId)
+
+  const sendMessageUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+  try {
+    const response = await fetch(sendMessageUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Ошибка при отправке сообщения: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 app.listen(PORT, (err)=>{
   console.log(PORT)
