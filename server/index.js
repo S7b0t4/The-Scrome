@@ -121,7 +121,7 @@ app.post('/api/sendMessage', async (req, res) => {
   const { message, selectedChat } = req.body;
 
 
-  const botToken = "7358477783:AAFqhM5DZUWF18keUNoFC0EV6I5PZrlxD50";
+  const botToken = "chatbot_token";
   const chatId = selectedChat.id;
   console.log(chatId)
 
