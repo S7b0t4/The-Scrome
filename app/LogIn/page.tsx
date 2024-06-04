@@ -35,7 +35,7 @@ const LogIn = () => {
   }
 
   return (
-    <form className="flex flex-col">
+    <form className="flex flex-col gap-2">
       {error && <div className="p-2 border-blue-500 border-2 w-2/5 m-auto">{error}</div>}
       <input placeholder="Username" ref={nameInput} className="p-2 border-blue-500 border-2 w-2/5 m-auto" type="text" name="name" autoComplete="username"/>
       <input placeholder="Password" ref={passwordInput} className="p-2 border-blue-500 border-2 w-2/5 m-auto mb-9" type="password" name="name" autoComplete="password"/>

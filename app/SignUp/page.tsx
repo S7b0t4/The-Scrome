@@ -7,12 +7,14 @@ const SignUp = () => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const nameInput = useRef({})
+  const emailInput = useRef({})
   const passwordInput = useRef({})
   const [error, setError] = useState("");
  
   const onSubmit = (event) => {
     event.preventDefault();
     const username = nameInput.current.value;
+    const email = emailInput.current.value;
     const password = passwordInput.current.value;
   
     const usernameRegex = /^[a-zA-Z0-9]+$/;
@@ -33,6 +35,7 @@ const SignUp = () => {
   
     let userData = {
       name: username,
+      email: email,
       password: password,
     };
   
@@ -56,10 +59,11 @@ const SignUp = () => {
   
  
   return (
-    <form className="flex flex-col">
+    <form className="flex flex-col gap-2">
       {error && <div className="p-2 border-blue-500 border-2 w-2/5 m-auto">{error}</div>}
-      <input placeholder="Username" ref={nameInput} className="p-2 border-blue-500 border-2 w-2/5 m-auto" type="text" name="name" autoComplete="username"/>
-      <input placeholder="Password" ref={passwordInput} className="p-2 border-blue-500 border-2 w-2/5 m-auto mb-9" type="password" name="name" autoComplete="new-password"/>
+      <input placeholder="Username" ref={nameInput} className="p-2 border-blue-500 border-2 w-2/5 m-auto" type="text" name="username" autoComplete="username"/>
+      <input placeholder="Email" ref={emailInput} className="p-2 border-blue-500 border-2 w-2/5 m-auto" type="text" name="email" autoComplete="email"/>
+      <input placeholder="Password" ref={passwordInput} className="p-2 border-blue-500 border-2 w-2/5 m-auto mb-9" type="password" name="password" autoComplete="new-password"/>
       <button className="border-blue-700 border-2 w-2/5 m-auto" onClick={onSubmit} type="submit" disabled={isLoading}>
         {isLoading ? "Loading..." : "Submit"}
       </button>

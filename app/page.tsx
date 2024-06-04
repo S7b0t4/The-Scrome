@@ -38,7 +38,7 @@ const ProtectedPage: FunctionComponent = () => {
   };
 
   useEffect(() => {
-    axios.get('https://api.telegram.org/bot7358477783:AAFqhM5DZUWF18keUNoFC0EV6I5PZrlxD50/getUpdates')
+    axios.get('link')
       .then(function (response) {
         const results = response.data.result;
         const newChats: Chat[] = [];

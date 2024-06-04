@@ -1,12 +1,14 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const cors = require("cors")
+const cors = require("cors");
 const bcrypt = require('bcrypt');
-const sqlite3 = require('sqlite3')
+const sqlite3 = require('sqlite3');
 const jwt = require('jsonwebtoken');
 const rateLimit = require("express-rate-limit");
- 
+const nodemailer = require('nodemailer');
+const fetch = require('node-fetch');
+
 const corsOrigin = {
   origin: ["https://s7b0t4-website-server.ru", "http://localhost:3000"],
   credentials: true,
@@ -19,12 +21,19 @@ const limiter = rateLimit({
   message: 'Слишком много запросов с вашего IP, попробуйте позже.'
 });
 
-app.use(limiter);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'email',
+    pass: 'appkey'
+  }
+});
 
+app.use(limiter);
 app.use(cors(corsOrigin));
 app.use(bodyParser.json());
 
-const PORT = 5000
+const PORT = 5000;
 
 const db = new sqlite3.Database('users.db');
 
@@ -47,10 +56,11 @@ app.get('/users', function(req, res) {
 });
 
 app.post('/register', async function(req, res) {
-  const { name, password } = req.body;
+  const { name, password, email } = req.body;
+  console.log(req.body);
 
-  if (!name || !password) {
-    return res.status(400).send({ message: 'Имя пользователя и пароль обязательны' });
+  if (!name || !password || !email) {
+    return res.status(400).send({ message: 'Имя пользователя, пароль и email обязательны' });
   }
 
   try {
@@ -66,7 +76,7 @@ app.post('/register', async function(req, res) {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      db.run('INSERT INTO users (name, password) VALUES (?, ?)', [name, hashedPassword], function(err) {
+      db.run('INSERT INTO users (name, password) VALUES (?, ?)', [name, hashedPassword], async function(err) {
         if (err) {
           console.error('Ошибка при регистрации пользователя:', err);
           return res.status(500).send({ message: 'Ошибка при регистрации пользователя' });
@@ -74,7 +84,25 @@ app.post('/register', async function(req, res) {
 
         const token = jwt.sign({ name }, 'секретный_ключ', { expiresIn: '1h' });
 
-        res.status(201).send({ message: 'Пользователь успешно зарегистрирован', token });
+        const mailOptions = {
+          from: 'anthony.pan.00@gmail.com',
+          to: email,
+          subject: 'Email Verification',
+          text: `Please verify your email by clicking on the link`
+        };
+
+        try {
+          const info = await transporter.sendMail(mailOptions);
+          console.log('Email sent:', info.response);
+          if (!res.headersSent) {
+            res.status(201).send({ message: 'Пользователь успешно зарегистрирован и письмо отправлено', token });
+          }
+        } catch (error) {
+          console.error('Error sending email:', error);
+          if (!res.headersSent) {
+            res.status(500).send('Ошибка при отправке email');
+          }
+        }
       });
     });
   } catch (err) {
@@ -117,13 +145,11 @@ app.post('/login', async function(req, res) {
 });
 
 app.post('/api/sendMessage', async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   const { message, selectedChat } = req.body;
 
-
-  const botToken = "chatbot_token";
+  const botToken = "tgtoken";
   const chatId = selectedChat.id;
-  console.log(chatId)
 
   const sendMessageUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
@@ -150,6 +176,10 @@ app.post('/api/sendMessage', async (req, res) => {
   }
 });
 
-app.listen(PORT, (err)=>{
-  console.log(PORT)
-})
+app.listen(PORT, (err) => {
+  if (err) {
+    console.error('Ошибка при запуске сервера:', err);
+  } else {
+    console.log(`Server is running on port`, PORT);
+  }
+});
