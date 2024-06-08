@@ -11,9 +11,13 @@ const LogIn = () => {
   const [error, setError] = useState("");
 
   const onSubmit = () => {
+
+    const username = nameInput.current.value;
+    const password = passwordInput.current.value;
+
     let userData = {
-      name: nameInput.current.value,
-      password: passwordInput.current.value,
+      name: username,
+      password: password,
     };
 
     try {
@@ -23,6 +27,7 @@ const LogIn = () => {
         .then(function (response) {
           const token = response.data.token;
           localStorage.setItem('token', token);
+          localStorage.setItem('username', username);
           router.replace("/");
         })
         .catch((error) =>  {

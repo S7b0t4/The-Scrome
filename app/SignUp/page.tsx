@@ -6,12 +6,12 @@ import { useRouter } from 'next/navigation'
 const SignUp = () => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
-  const nameInput = useRef({})
-  const emailInput = useRef({})
-  const passwordInput = useRef({})
+  const nameInput = useRef<HTMLInputElement | null>(null)
+  const emailInput = useRef<HTMLInputElement | null>(null)
+  const passwordInput = useRef<HTMLInputElement | null>(null)
   const [error, setError] = useState("");
  
-  const onSubmit = (event) => {
+  const onSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
     const username = nameInput.current.value;
     const email = emailInput.current.value;
@@ -44,9 +44,11 @@ const SignUp = () => {
       setIsLoading(true);
       axios.post("http://localhost:5000/register", userData)
         .then(function (response) {
+          console.log(response.data)
           const token = response.data.token;
           localStorage.setItem('token', token);
-          router.replace("/");
+          localStorage.setItem('username', username);
+          /* router.replace("/"); */
         })
         .catch((error) => {
           setError("Failed to submit form");

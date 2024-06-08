@@ -6,7 +6,7 @@ import axios from "axios";
 const ProtectedPage: FunctionComponent = () => {
   const [message, setMessage] = useState("");
   const [err, setErr] = useState("");
-  const [chatList, setChatList] = useState([{ title: "S7b0t4", id: 852493309, }]);
+  const [chatList, setChatList] = useState([{title: '', id: 0}]);
   const [selectedChat, setSelectedChat] = useState<{ title: string; id: number } | null>(null);
 
   interface Chat {
@@ -38,29 +38,26 @@ const ProtectedPage: FunctionComponent = () => {
   };
 
   useEffect(() => {
-    axios.get('link')
+    axios.get(`https://api.telegram.org/bot${process.env.API_TOKEN}/getUpdates`)
       .then(function (response) {
         const results = response.data.result;
-        const newChats: Chat[] = [];
 
         results.forEach((element: any) => {
           if (element.message) {
-            let data: Chat = { title: "S7b0t4", id: 52493309 };
-            if (element.message.chat.title) {
-              data = { title: element.message.chat.title, id: element.message.chat.id };
-            } else if (element.message.chat.username) {
-              data = { title: element.message.chat.username, id: element.message.chat.id };
+            let user = element.message.chat
+            let data: Chat = { title: "", id: 0 };
+
+            if (user.title) {
+              data = { title: user.title, id: user.id };
+            } else if (user.username) {
+              data = { title: user.username, id: user.id };
             }
 
-            if (!chatList.some(chat => chat.title === data.title) && !newChats.some(chat => chat.title === data.title)) {
-              newChats.push(data);
+            if(data.title !== "" && !chatList.some(obj => obj.id === data.id)){
+              setChatList([...chatList, data])
             }
           }
         });
-
-        if (newChats.length > 0) {
-          setChatList(prevChatList => [...prevChatList, ...newChats]);
-        }
       })
       .catch(function (error) {
         console.log(error);
@@ -77,8 +74,8 @@ const ProtectedPage: FunctionComponent = () => {
       <div className="flex flex-col w-3/5 m-auto gap-3">
         <h1>Выберите чат</h1>
         <ul>
-          {chatList.map(chat => (
-            <li key={chat.id} onClick={() => handleChatSelect(chat)} className="cursor-pointer">
+          {chatList.map((chat, index) => (
+            <li key={index} onClick={() => handleChatSelect(chat)} className="cursor-pointer">
               {chat.title}
             </li>
           ))}
